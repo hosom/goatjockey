@@ -12,11 +12,10 @@ def main(api_key, start_date):
 
 	for pulse in otx.getsince_iter(start_date):
 		for indicator in pulse['indicators']:
-			if indicator['type'] in collected_types:
-				b = goat.match(indicator['indicator'])
+			b = goat.match(indicator['indicator'])
 
-				if not b[0]: 
-					interesting_iocs.add(indicator['indicator'])
+			if not b[0]: 
+				interesting_iocs.add(indicator['indicator'])
 
 	for ioc in interesting_iocs:
 		print(ioc)
