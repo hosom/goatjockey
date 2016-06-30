@@ -1,6 +1,8 @@
 import requests
 import os
 import sys
+import re
+import ipaddress
 
 from datetime import date
 from zipfile import ZipFile
@@ -17,6 +19,8 @@ class GoatJockey():
 		self._ETLD_PATH = etld_path
 
 		self.refresh_lists(topx=topx)
+
+		self.hash_pattern = re.compile('([a-fA-F0-9]{64}$|[a-fA-F0-9]{40}$|[a-fA-F0-9]{32}$)')
 
 	def _download_file(self, url, fpath, blocksize=1024):
 		'''
@@ -140,14 +144,48 @@ class GoatJockey():
 
 		return None
 
-	def match(self, domain):
+	def _ip_match(self, ipaddr):
+		'''This exists for future support, it always returns False
+		for now.
+		'''
+		return False, str(ipaddr)
+
+	def _hash_match(self, ahash):
+		'''This exists for future support, it always returns False
+		for now.
+		'''
+		return False, ahash
+
+	def _domain_match(self, domain):
 		'''
 		'''
-		domain = domain.lower()
 		tld = '.'.join(self.get_tld(domain))
 		if tld in self.ALEXA_DOMAINS:
 			return True, self.ALEXA_DOMAINS[tld]
 		if tld in self.WHITELIST:
 			return True, self.WHITELIST[tld]
+
+	def match(self, ioc):
+		'''
+		'''
+		ioc = ioc.lower()
+		# Try IP address first, this is an easy check based on whether or not
+		# the ipaddress library outputs an error on parsing attempts
+		try:
+			ip = ipaddress.ip_address(ioc)
+			return self._ip_match(ip)
+		except ValueError:
+			pass
+
+		# Next check for hashes, the pattern currently checks for SHA-1,
+		# SHA-256, and MD5
+		if self.hash_pattern.match(ioc):
+			return self._hash_match(ioc)
+
+		# Finally, try looking up the ioc as a domain
+		try:
+			return self._domain_match(ioc)
+		except TypeError:
+			return False, None
 
 		return False, None
