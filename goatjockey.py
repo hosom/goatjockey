@@ -164,6 +164,7 @@ class GoatJockey():
 			return True, self.ALEXA_DOMAINS[tld]
 		if tld in self.WHITELIST:
 			return True, self.WHITELIST[tld]
+		return False, tld
 
 	def match(self, ioc):
 		'''
