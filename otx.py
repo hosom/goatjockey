@@ -3,6 +3,8 @@ from argparse import ArgumentParser
 from goatjockey import GoatJockey
 from OTXv2 import OTXv2
 
+from datetime import date
+
 def main(api_key, start_date):
 
 	goat = GoatJockey(topx=1000000)
@@ -24,7 +26,8 @@ if __name__ == '__main__':
 	parser = ArgumentParser('otx', description='Download OTX and verify it against GoatJockey')
 	parser.add_argument('api_key', type=str,
 						help='API key for accessing OTX')
-	parser.add_argument('start_date', type=str,
+	parser.add_argument('-s', '--start', type=str,
+						default=str(date.today()),
 						help='Date to start intel pull on.')
 	args = parser.parse_args()
-	main(args.api_key, args.start_date)
+	main(args.api_key, args.start)
