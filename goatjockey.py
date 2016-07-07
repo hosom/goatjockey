@@ -11,13 +11,16 @@ class GoatJockey():
 	'''
 	'''
 	_ALEXA_URL = 'http://s3.amazonaws.com/alexa-static/top-1m.csv.zip'
-	_ETLD_URL = 'https://publicsuffix.org/list/public_suffix_list.dat'
+	_ETLD_URL = 'http://publicsuffix.org/list/public_suffix_list.dat'
 
 	def __init__(self, topx=5048, alexa_path='./top-1m.csv.zip', whitelist_path='./whitelist.dat', etld_path='./public_suffix_list.dat'):
 		self._ALEXA_PATH = alexa_path
 		self._WHITELIST_PATH = whitelist_path
 		self._ETLD_PATH = etld_path
 
+		# Some validation. If topx is greater than 1m, it'll throw an error.
+		if topx > 1000000:
+			topx = 1000000
 		self.refresh_lists(topx=topx)
 
 		self.hash_pattern = re.compile('([a-fA-F0-9]{64}$|[a-fA-F0-9]{40}$|[a-fA-F0-9]{32}$)')
