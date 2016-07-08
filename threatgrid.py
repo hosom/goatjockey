@@ -24,6 +24,19 @@ def main(api_key, after, before):
 	for domain in domains:
 		print(domain)
 
+	del domains
+
+	ips = set()
+	for page in threatgrid.ips(options):
+		for ip in page[u'data'][u'items']:
+			b = goat.match(ip[u'ip'])
+
+			if not b[0]:
+				ips.add(ip[u'ip'])
+
+	for ip in ips:
+		print(ip)
+
 if __name__ == '__main__':
 	parser = ArgumentParser('threatgrid', description='Download IOCs from threatgrid')
 	parser.add_argument('api_key', type=str,
